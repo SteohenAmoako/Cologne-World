@@ -82,16 +82,16 @@ export async function ProductGrid({ searchParams }: { searchParams: SearchParams
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 mb-6">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
           {searchParams.search ? `Search results for "${searchParams.search}"` : "All Perfumes"}
         </h2>
-        <p className="text-gray-600">
+        <p className="text-sm sm:text-base text-gray-600">
           {perfumes.length} product{perfumes.length !== 1 ? "s" : ""}
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {perfumes.map((perfume) => (
           <ProductCard key={perfume.id} perfume={perfume as Perfume} />
         ))}

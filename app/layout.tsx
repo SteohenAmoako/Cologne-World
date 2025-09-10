@@ -6,7 +6,6 @@ import { Analytics } from "@vercel/analytics/next"
 import { Suspense } from "react"
 import { CartProvider } from "@/contexts/cart-context"
 import "./globals.css"
-import NavHeader from '@/components/NavHeader';
 
 export const metadata: Metadata = {
   title: "Perfume Palace - Luxury Fragrances",
@@ -25,8 +24,7 @@ export default function RootLayout({
         <CartProvider>
           <Suspense fallback={null}>
             <div className="min-h-screen">
-              <NavHeader />
-              <main className="pt-16">
+              <main>
                 {children}
               </main>
             </div>

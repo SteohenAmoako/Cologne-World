@@ -33,7 +33,7 @@ export function CheckoutContent({ userProfile }: CheckoutContentProps) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/4"></div>
+          <div className="h-8 bg-gray-200 rounded w-1/2 sm:w-1/3"></div>
           <div className="h-64 bg-gray-200 rounded"></div>
         </div>
       </div>
@@ -94,16 +94,16 @@ export function CheckoutContent({ userProfile }: CheckoutContentProps) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center gap-2 mb-6">
+    <div className="container mx-auto px-4 py-6 sm:py-8">
+      <div className="flex flex-wrap items-center gap-2 mb-4 sm:mb-6">
         <Link href="/cart" className="text-gray-600 hover:text-gray-900">
           <ArrowLeft className="h-5 w-5" />
         </Link>
-        <h1 className="text-3xl font-bold text-gray-900">Checkout</h1>
-        <span className="text-gray-600">({cartCount} items)</span>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Checkout</h1>
+        <span className="text-gray-600 text-sm sm:text-base">({cartCount} items)</span>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         {/* Checkout Form */}
         <div className="lg:col-span-2">
           <CheckoutForm userProfile={userProfile} onSubmit={handleOrderSubmit} isProcessing={isProcessing} />

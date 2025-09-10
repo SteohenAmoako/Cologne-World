@@ -26,20 +26,20 @@ export function ProfileContent({ user, profile, orders }: ProfileContentProps) {
   ]
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center gap-2 mb-6">
+    <div className="container mx-auto px-4 py-6 sm:py-8">
+      <div className="flex items-center gap-2 mb-4 sm:mb-6">
         <Link href="/shop" className="text-gray-600 hover:text-gray-900">
           <ArrowLeft className="h-5 w-5" />
         </Link>
-        <h1 className="text-3xl font-bold text-gray-900">My Account</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">My Account</h1>
       </div>
 
-      <div className="grid lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 lg:gap-8">
         {/* Sidebar Navigation */}
         <div className="lg:col-span-1">
           <Card>
-            <CardContent className="p-4">
-              <div className="space-y-2">
+            <CardContent className="p-3 sm:p-4">
+              <div className="grid grid-cols-2 sm:block gap-2 sm:space-y-2">
                 {tabs.map((tab) => (
                   <Button
                     key={tab.id}
