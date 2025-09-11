@@ -56,7 +56,7 @@ export function CartContent() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
         {/* Cart Items */}
         <div className="lg:col-span-2">
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-1 gap-3 sm:gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(250px,1fr))] lg:grid-cols-[repeat(auto-fit,minmax(300px,400px))] gap-4 p-4 max-w-7xl mx-auto">
             {cartItems.map((item) => (
               <CartItem key={item.id} item={item} />
             ))}

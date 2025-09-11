@@ -56,11 +56,11 @@ export function CartItem({ item }: CartItemProps) {
   const subtotal = item.quantity * item.perfumes.price
 
   return (
-    <Card className={`${isRemoving ? "opacity-50" : ""} transition-opacity`}> 
+    <Card className={`${isRemoving ? "opacity-50" : ""} transition-opacity`}>
       <CardContent className="p-3 sm:p-4">
-        <div className="flex gap-3 sm:gap-4">
+        <div className="flex gap-3 sm:gap-4 items-start">
           {/* Product Image */}
-          <div className="relative w-20 h-24 sm:w-24 sm:h-32 flex-shrink-0 overflow-hidden rounded-lg">
+          <div className="relative w-16 h-20 sm:w-24 sm:h-32 flex-shrink-0 overflow-hidden rounded-md">
             <Image
               src={item.perfumes.image_url || "/placeholder.svg"}
               alt={item.perfumes.name}
@@ -70,19 +70,19 @@ export function CartItem({ item }: CartItemProps) {
           </div>
 
           {/* Product Details */}
-          <div className="flex-1 space-y-1 sm:space-y-2 text-xs sm:text-sm">
+          <div className="flex-1 min-w-0 space-y-1 sm:space-y-2 text-xs sm:text-sm">
             <div className="flex items-start justify-between gap-2">
-              <div>
-                <Badge variant="secondary" className="mb-1">
+              <div className="min-w-0">
+                <Badge variant="secondary" className="mb-1 px-1.5 py-0.5 text-[10px]">
                   {item.perfumes.brands.name}
                 </Badge>
                 <Link
                   href={`/shop/product/${item.perfumes.id}`}
-                  className="block font-semibold text-gray-900 hover:text-rose-600 transition-colors line-clamp-1"
+                  className="block font-semibold text-gray-900 hover:text-rose-600 transition-colors line-clamp-2"
                 >
                   {item.perfumes.name}
                 </Link>
-                <p className="text-sm sm:text-lg font-bold text-rose-600">GH₵{item.perfumes.price}</p>
+                <p className="text-xs sm:text-base font-bold text-rose-600">GH₵{item.perfumes.price}</p>
               </div>
               <Button
                 variant="ghost"
@@ -96,24 +96,24 @@ export function CartItem({ item }: CartItemProps) {
             </div>
 
             {/* Quantity Controls */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-end justify-between gap-3">
               <div className="flex items-center gap-2">
-                <span className="text-xs sm:text-sm text-gray-600">Qty:</span>
+                <span className="text-[11px] sm:text-sm text-gray-600">Qty:</span>
                 <div className="flex items-center gap-1">
                   <Button
                     variant="outline"
                     size="icon"
-                    className="h-7 w-7 sm:h-8 sm:w-8 bg-transparent"
+                    className="h-6 w-6 sm:h-8 sm:w-8 bg-transparent"
                     onClick={() => handleQuantityChange(item.quantity - 1)}
                     disabled={item.quantity <= 1 || isUpdating}
                   >
                     -
                   </Button>
-                  <span className="w-7 sm:w-8 text-center text-xs sm:text-sm font-medium">{item.quantity}</span>
+                  <span className="w-6 sm:w-8 text-center text-[11px] sm:text-sm font-medium">{item.quantity}</span>
                   <Button
                     variant="outline"
                     size="icon"
-                    className="h-7 w-7 sm:h-8 sm:w-8 bg-transparent"
+                    className="h-6 w-6 sm:h-8 sm:w-8 bg-transparent"
                     onClick={() => handleQuantityChange(item.quantity + 1)}
                     disabled={item.quantity >= item.perfumes.stock_quantity || isUpdating}
                   >
@@ -121,9 +121,9 @@ export function CartItem({ item }: CartItemProps) {
                   </Button>
                 </div>
               </div>
-              <div className="text-right">
-                <p className="font-semibold text-gray-900 text-sm sm:text-base">GH₵{subtotal.toFixed(2)}</p>
-                {item.quantity > 1 && <p className="text-[10px] sm:text-xs text-gray-500">GH₵{item.perfumes.price} each</p>}
+              <div className="text-right shrink-0">
+                <p className="font-semibold text-gray-900 text-sm sm:text-base leading-none">GH₵{subtotal.toFixed(2)}</p>
+                {item.quantity > 1 && <p className="text-[10px] sm:text-xs text-gray-500 leading-none mt-1">GH₵{item.perfumes.price} each</p>}
               </div>
             </div>
 
