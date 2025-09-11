@@ -1,16 +1,34 @@
 "use client"
 
 import type React from "react"
-
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Checkbox } from "@/components/ui/checkbox"
-import { CreditCard, Truck, MapPin, User } from "lucide-react"
+import { Truck, MapPin, User } from "lucide-react"
+import { useToast } from "@/hooks/use-toast"
+
+// Paystack TypeScript declarations
+declare global {
+  interface Window {
+    PaystackPop: {
+      setup: (options: {
+        key: string
+        email: string
+        amount: number
+        currency?: string
+        ref?: string
+        callback: (response: any) => void
+        onClose: () => void
+        metadata?: any
+      }) => {
+        openIframe: () => void
+      }
+    }
+  }
+}
 
 interface UserProfile {
   full_name?: string
@@ -24,11 +42,22 @@ interface UserProfile {
 
 interface CheckoutFormProps {
   userProfile: UserProfile | null
-  onSubmit: (data: any) => void
-  isProcessing: boolean
+  onPaymentSuccess?: (response: any, formData: any) => void
+  onPaymentError?: (error: any) => void
+  amount: number // Amount in pesewas (e.g., 1000 = ₵10.00)
+  paystackPublicKey: string
+  isProcessing?: boolean
 }
 
-export function CheckoutForm({ userProfile, onSubmit, isProcessing }: CheckoutFormProps) {
+export function CheckoutForm({ 
+  userProfile, 
+  onPaymentSuccess, 
+  onPaymentError,
+  amount,
+  paystackPublicKey,
+  isProcessing = false 
+}: CheckoutFormProps) {
+  const { toast } = useToast()
   const [formData, setFormData] = useState({
     // Customer Info
     email: "",
@@ -40,7 +69,7 @@ export function CheckoutForm({ userProfile, onSubmit, isProcessing }: CheckoutFo
     shipping_city: userProfile?.city || "",
     shipping_state: userProfile?.state || "",
     shipping_postal_code: userProfile?.postal_code || "",
-    shipping_country: userProfile?.country || "United States",
+    shipping_country: userProfile?.country || "Ghana",
 
     // Billing Address
     billing_same_as_shipping: true,
@@ -48,23 +77,144 @@ export function CheckoutForm({ userProfile, onSubmit, isProcessing }: CheckoutFo
     billing_city: "",
     billing_state: "",
     billing_postal_code: "",
-    billing_country: "United States",
-
-    // Payment
-    payment_method: "credit_card",
-    card_number: "",
-    card_expiry: "",
-    card_cvc: "",
-    card_name: "",
+    billing_country: "Ghana",
   })
+
+  const [isPaystackLoaded, setIsPaystackLoaded] = useState(false)
+  const [processing, setProcessing] = useState(isProcessing)
+
+  // Load Paystack script
+  useEffect(() => {
+    const script = document.createElement('script')
+    script.src = 'https://js.paystack.co/v1/inline.js'
+    script.async = true
+    script.onload = () => setIsPaystackLoaded(true)
+    script.onerror = () => {
+      console.error('Failed to load Paystack script')
+      onPaymentError?.('Failed to load payment processor')
+    }
+    document.body.appendChild(script)
+
+    return () => {
+      document.body.removeChild(script)
+    }
+  }, [onPaymentError])
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
+  const generateTransactionRef = () => {
+    return `txn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+  }
+
+  const validateForm = () => {
+    const requiredFields = [
+      'email', 'full_name', 'shipping_address', 'shipping_city', 
+      'shipping_state', 'shipping_postal_code'
+    ]
+
+    for (const field of requiredFields) {
+      if (!formData[field as keyof typeof formData]) {
+        alert(`Please fill in the ${field.replace('_', ' ')} field`)
+        return false
+      }
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(formData.email)) {
+      alert('Please enter a valid email address')
+      return false
+    }
+
+    return true
+  }
+
+  const handlePaystackPayment = () => {
+    if (!isPaystackLoaded) {
+      toast({
+        title: "Payment Not Ready",
+        description: "Payment processor is loading. Please try again in a moment.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (!validateForm()) {
+      return
+    }
+
+    setProcessing(true)
+
+    const billingData = formData.billing_same_as_shipping ? {
+      billing_address: formData.shipping_address,
+      billing_city: formData.shipping_city,
+      billing_state: formData.shipping_state,
+      billing_postal_code: formData.shipping_postal_code,
+      billing_country: formData.shipping_country,
+    } : {
+      billing_address: formData.billing_address,
+      billing_city: formData.billing_city,
+      billing_state: formData.billing_state,
+      billing_postal_code: formData.billing_postal_code,
+      billing_country: formData.billing_country,
+    }
+
+    const paymentData = {
+      key: paystackPublicKey,
+      email: formData.email,
+      amount: amount, // Amount in pesewas
+      currency: 'GHS',
+      ref: generateTransactionRef(),
+      callback: (response: any) => {
+        setProcessing(false)
+        console.log('Payment successful:', response)
+        onPaymentSuccess?.(response, { ...formData, ...billingData })
+      },
+      onClose: () => {
+        setProcessing(false)
+        console.log('Payment popup closed')
+      },
+      metadata: {
+        custom_fields: [
+          {
+            display_name: 'Full Name',
+            variable_name: 'full_name',
+            value: formData.full_name
+          },
+          {
+            display_name: 'Phone',
+            variable_name: 'phone',
+            value: formData.phone
+          },
+          {
+            display_name: 'Shipping Address',
+            variable_name: 'shipping_address',
+            value: `${formData.shipping_address}, ${formData.shipping_city}, ${formData.shipping_state} ${formData.shipping_postal_code}`
+          }
+        ]
+      }
+    }
+
+    try {
+      const handler = window.PaystackPop.setup(paymentData)
+      handler.openIframe()
+    } catch (error) {
+      setProcessing(false)
+      console.error('Paystack error:', error)
+      toast({
+        title: "Payment Failed",
+        description: "Payment initialization failed. Please try again.",
+        variant: "destructive",
+      })
+      onPaymentError?.(error)
+    }
+  }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    onSubmit(formData)
+    handlePaystackPayment()
   }
 
   return (
@@ -233,80 +383,15 @@ export function CheckoutForm({ userProfile, onSubmit, isProcessing }: CheckoutFo
         </CardContent>
       </Card>
 
-      {/* Payment Method */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <CreditCard className="h-5 w-5" />
-            Payment Method
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <RadioGroup
-            value={formData.payment_method}
-            onValueChange={(value) => handleInputChange("payment_method", value)}
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="credit_card" id="credit_card" />
-              <Label htmlFor="credit_card">Credit Card</Label>
-            </div>
-          </RadioGroup>
-
-          <Separator />
-
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="card_name">Name on Card *</Label>
-              <Input
-                id="card_name"
-                type="text"
-                value={formData.card_name}
-                onChange={(e) => handleInputChange("card_name", e.target.value)}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="card_number">Card Number *</Label>
-              <Input
-                id="card_number"
-                type="text"
-                placeholder="1234 5678 9012 3456"
-                value={formData.card_number}
-                onChange={(e) => handleInputChange("card_number", e.target.value)}
-                required
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="card_expiry">Expiry Date *</Label>
-                <Input
-                  id="card_expiry"
-                  type="text"
-                  placeholder="MM/YY"
-                  value={formData.card_expiry}
-                  onChange={(e) => handleInputChange("card_expiry", e.target.value)}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="card_cvc">CVC *</Label>
-                <Input
-                  id="card_cvc"
-                  type="text"
-                  placeholder="123"
-                  value={formData.card_cvc}
-                  onChange={(e) => handleInputChange("card_cvc", e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Submit Button */}
-      <Button type="submit" className="w-full bg-rose-600 hover:bg-rose-700 text-lg py-6" disabled={isProcessing}>
-        {isProcessing ? "Processing Order..." : "Complete Order"}
+      <Button 
+        type="submit" 
+        className="w-full bg-rose-600 hover:bg-rose-700 text-lg py-6" 
+        disabled={processing || !isPaystackLoaded}
+      >
+        {processing ? "Processing Payment..." : 
+         !isPaystackLoaded ? "Loading Payment..." : 
+         "Pay Now"}
       </Button>
     </form>
   )

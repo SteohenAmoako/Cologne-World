@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useCart } from "@/contexts/cart-context"
 import { CheckoutForm } from "./checkout-form"
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { ArrowLeft, ShoppingBag } from "lucide-react"
 import Link from "next/link"
+import { useToast } from "@/hooks/use-toast"
 
 interface UserProfile {
   full_name?: string
@@ -24,10 +25,20 @@ interface CheckoutContentProps {
   userProfile: UserProfile | null
 }
 
+function maskKey(key: string) {
+  if (!key) return "";
+  const trimmed = key.trim();
+  if (trimmed.length <= 10) return "**********";
+  return `${trimmed.slice(0, 6)}...${trimmed.slice(-4)}`;
+}
+
 export function CheckoutContent({ userProfile }: CheckoutContentProps) {
   const { cartItems, cartTotal, cartCount, loading } = useCart()
   const [isProcessing, setIsProcessing] = useState(false)
   const router = useRouter()
+  const { toast } = useToast()
+
+  // No need to load Paystack script here; CheckoutForm handles it
 
   if (loading) {
     return (
@@ -60,34 +71,68 @@ export function CheckoutContent({ userProfile }: CheckoutContentProps) {
     )
   }
 
-  const handleOrderSubmit = async (formData: any) => {
-    setIsProcessing(true)
+  const createOrder = async (formData: any, status: "pending" | "completed") => {
+    const response = await fetch("/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...formData,
+        payment_method: "paystack",
+        status,
+        items: cartItems.map((item) => ({
+          perfume_id: item.perfume_id,
+          quantity: item.quantity,
+          price: item.perfumes.price,
+        })),
+      }),
+    })
+    
+    const data = await response.json()
+    if (!response.ok) {
+      console.error("Order creation failed:", data)
+      throw new Error(data?.error || "Order creation failed")
+    }
+    return data.order
+  }
+
+  const handlePaymentSuccess = async (response: any, formData: any) => {
     try {
-      const response = await fetch("/api/orders", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...formData,
-          items: cartItems.map((item) => ({
-            perfume_id: item.perfume_id,
-            quantity: item.quantity,
-            price: item.perfumes.price,
-          })),
-        }),
+      const order = await createOrder({ ...formData, paystack_ref: response?.reference }, "completed")
+      toast({
+        title: "Payment Successful!",
+        description: "Your order has been placed and payment confirmed.",
+        variant: "default",
       })
+      router.push(`/checkout/success?order=${order.id}`)
+    } catch (err: any) {
+      console.error("Order creation error:", err)
+      toast({
+        title: "Payment Successful, Order Issue",
+        description: "Payment was successful but order creation failed. Please contact support with reference: " + (response?.reference || "unknown"),
+        variant: "destructive",
+      })
+    } finally {
+      setIsProcessing(false)
+    }
+  }
 
-      const data = await response.json()
-
-      if (response.ok) {
-        router.push(`/checkout/success?order=${data.order.id}`)
-      } else {
-        throw new Error(data.error || "Failed to create order")
-      }
-    } catch (error) {
-      console.error("Error creating order:", error)
-      alert("Failed to process order. Please try again.")
+  const handlePaymentError = async () => {
+    try {
+      // Create a pending order so the user can retry later
+      const order = await createOrder({}, "pending")
+      toast({
+        title: "Payment Cancelled",
+        description: "Your order has been saved as pending. You can complete payment later.",
+        variant: "default",
+      })
+      router.push(`/checkout/success?order=${order.id}`)
+    } catch (err: any) {
+      console.error("Order creation error:", err)
+      toast({
+        title: "Order Creation Failed",
+        description: "Unable to create your order. Please try again.",
+        variant: "destructive",
+      })
     } finally {
       setIsProcessing(false)
     }
@@ -106,7 +151,14 @@ export function CheckoutContent({ userProfile }: CheckoutContentProps) {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
         {/* Checkout Form */}
         <div className="lg:col-span-2">
-          <CheckoutForm userProfile={userProfile} onSubmit={handleOrderSubmit} isProcessing={isProcessing} />
+        <CheckoutForm
+          userProfile={userProfile}
+          onPaymentSuccess={handlePaymentSuccess}
+          onPaymentError={handlePaymentError}
+          amount={Math.round(cartTotal * 100)} // Pesewas
+          paystackPublicKey={(process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || "").trim()}
+          isProcessing={isProcessing}
+        />
         </div>
 
         {/* Order Summary */}

@@ -20,16 +20,10 @@ export async function POST(request: NextRequest) {
       phone,
       shipping_address,
       shipping_city,
-      shipping_state,
       shipping_postal_code,
       shipping_country,
-      billing_same_as_shipping,
-      billing_address,
-      billing_city,
-      billing_state,
-      billing_postal_code,
-      billing_country,
       payment_method,
+      status,
       items,
     } = body
 
@@ -44,25 +38,15 @@ export async function POST(request: NextRequest) {
       .from("orders")
       .insert({
         user_id: user.id,
-        email,
-        full_name,
-        phone,
+        total_amount: total,
+        status: status === "completed" ? "completed" : "pending",
         shipping_address,
         shipping_city,
-        shipping_state,
         shipping_postal_code,
         shipping_country,
-        billing_address: billing_same_as_shipping ? shipping_address : billing_address,
-        billing_city: billing_same_as_shipping ? shipping_city : billing_city,
-        billing_state: billing_same_as_shipping ? shipping_state : billing_state,
-        billing_postal_code: billing_same_as_shipping ? shipping_postal_code : billing_postal_code,
-        billing_country: billing_same_as_shipping ? shipping_country : billing_country,
-        payment_method,
-        subtotal,
-        shipping_cost: shipping,
-        tax_amount: tax,
-        total_amount: total,
-        status: "pending",
+        customer_name: full_name,
+        customer_phone: phone,
+        customer_email: email,
       })
       .select()
       .single()
@@ -76,7 +60,8 @@ export async function POST(request: NextRequest) {
       order_id: order.id,
       perfume_id: item.perfume_id,
       quantity: item.quantity,
-      price: item.price,
+      unit_price: item.price,
+      total_price: item.quantity * item.price,
     }))
 
     const { error: itemsError } = await supabase.from("order_items").insert(orderItems)
