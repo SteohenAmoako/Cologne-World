@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: "Perfume Palace - Luxury Fragrances",
   description: "Discover premium perfumes from top brands including Pear Potion, Asad and Yara Mix, Saheb, and more",
   generator: "v0.app",
-  metadataBase: new URL((process.env.NEXT_PUBLIC_SITE_URL || "https://example.com").trim()),
+  metadataBase: new URL((process.env.NEXT_PUBLIC_SITE_URL || "https://cologne-world.vercel.app/shop").trim()),
   openGraph: {
     title: "Perfume Palace - Luxury Fragrances",
     description:
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     siteName: "Perfume Palace",
     images: [
       {
-        url: "/placeholder.jpg",
+        url: "/preview.jpg",
         width: 1200,
         height: 630,
         alt: "Perfume Palace preview",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     title: "Perfume Palace - Luxury Fragrances",
     description:
       "Discover premium perfumes from top brands including Pear Potion, Asad and Yara Mix, Saheb, and more",
-    images: ["/placeholder.jpg"],
+    images: ["/preview.jpg"],
   },
   icons: {
     icon: "/placeholder-logo.svg",
