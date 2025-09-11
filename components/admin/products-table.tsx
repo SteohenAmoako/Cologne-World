@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Edit, Plus, Search, Trash2 } from "lucide-react"
+import { Edit, Plus, Search, Trash2, Eye } from "lucide-react"
 import Image from "next/image"
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
@@ -45,8 +45,10 @@ export function ProductsTable({ products, brands, perfumeTypes }: ProductsTableP
   const [open, setOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
   const [deleteOpen, setDeleteOpen] = useState(false)
+  const [descriptionOpen, setDescriptionOpen] = useState(false)
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [deletingProduct, setDeletingProduct] = useState<Product | null>(null)
+  const [viewingDescription, setViewingDescription] = useState<Product | null>(null)
   const [saving, setSaving] = useState(false)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [fileError, setFileError] = useState<string | null>(null)
@@ -76,6 +78,17 @@ export function ProductsTable({ products, brands, perfumeTypes }: ProductsTableP
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.brands.name.toLowerCase().includes(searchTerm.toLowerCase()),
   )
+
+  // Helper function to truncate description
+  const truncateDescription = (text: string, maxLength: number = 60) => {
+    if (!text || text.length <= maxLength) return text
+    return text.substring(0, maxLength).trim() + "..."
+  }
+
+  // Helper function to check if description needs truncation
+  const needsTruncation = (text: string, maxLength: number = 60) => {
+    return text && text.length > maxLength
+  }
 
   const resetForm = () => {
     setForm({
@@ -155,26 +168,19 @@ export function ProductsTable({ products, brands, perfumeTypes }: ProductsTableP
 
   const handleEdit = (product: Product) => {
     setEditingProduct(product)
-  
     setForm({
       name: product.name,
       description: product.description || "",
-      price: product.price?.toString() || "",
-      brand_id: typeof product.brands === "object" 
-        ? product.brands.id?.toString() || "" 
-        : product.brands?.toString() || "",
-      perfume_type_id: typeof product.perfume_types === "object" 
-        ? product.perfume_types.id?.toString() || "" 
-        : product.perfume_types?.toString() || "",
+      price: product.price != null ? product.price.toString() : "",
+      brand_id: product.brands?.id != null ? String(product.brands.id) : "",
+      perfume_type_id: product.perfume_types?.id != null ? String(product.perfume_types.id) : "",
       image_url: product.image_url || "",
-      stock_quantity: product.stock_quantity?.toString() || "",
-      is_active: true,
+      stock_quantity: product.stock_quantity != null ? String(product.stock_quantity) : "",
+      is_active: product.is_active ?? true,
     })
-  
     setSelectedFile(null)
     setEditOpen(true)
   }
-  
 
   const handleEditSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -265,6 +271,11 @@ export function ProductsTable({ products, brands, perfumeTypes }: ProductsTableP
     }
   }
 
+  const handleViewDescription = (product: Product) => {
+    setViewingDescription(product)
+    setDescriptionOpen(true)
+  }
+
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Header Actions */}
@@ -287,13 +298,13 @@ export function ProductsTable({ products, brands, perfumeTypes }: ProductsTableP
                   Add Product
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-lg">
+              <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Add Product</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
                   {error && (
-                    <div className="text-sm text-red-600">{error}</div>
+                    <div className="text-sm text-red-600 p-2 bg-red-50 rounded">{error}</div>
                   )}
                   <div className="space-y-2">
                     <Label htmlFor="name">Name</Label>
@@ -301,7 +312,14 @@ export function ProductsTable({ products, brands, perfumeTypes }: ProductsTableP
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="description">Description</Label>
-                    <Input id="description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+                    <textarea
+                      id="description"
+                      value={form.description}
+                      onChange={(e) => setForm({ ...form, description: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm resize-none focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                      rows={3}
+                      placeholder="Enter product description..."
+                    />
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -350,9 +368,12 @@ export function ProductsTable({ products, brands, perfumeTypes }: ProductsTableP
                       onChange={(e) => {
                         const file = e.target.files?.[0] || null
                         setSelectedFile(file)
+                        if (file) {
+                          setForm({ ...form, image_url: "" })
+                        }
                       }}
                     />
-                    {fileError && <div className="text-sm text-red-600">{fileError}</div>}
+                    {fileError && <div className="text-sm text-red-600 p-2 bg-red-50 rounded">{fileError}</div>}
                     {previewUrl && (
                       <div className="mt-2">
                         <div className="relative w-24 h-32 overflow-hidden rounded border">
@@ -367,7 +388,12 @@ export function ProductsTable({ products, brands, perfumeTypes }: ProductsTableP
                     <Input
                       placeholder="https://..."
                       value={form.image_url}
-                      onChange={(e) => setForm({ ...form, image_url: e.target.value })}
+                      onChange={(e) => {
+                        setForm({ ...form, image_url: e.target.value })
+                        if (e.target.value.trim()) {
+                          setSelectedFile(null)
+                        }
+                      }}
                     />
                   </div>
                   <DialogFooter>
@@ -390,86 +416,155 @@ export function ProductsTable({ products, brands, perfumeTypes }: ProductsTableP
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto -mx-2 sm:mx-0">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-medium">Product</th>
-                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-medium">Brand</th>
-                  <th className="hidden md:table-cell text-left py-2 sm:py-3 px-2 sm:px-4 font-medium">Type</th>
-                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-medium">Price</th>
-                  <th className="hidden sm:table-cell text-left py-2 sm:py-3 px-2 sm:px-4 font-medium">Stock</th>
-                  <th className="text-left py-2 sm:py-3 px-2 sm:px-4 font-medium">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredProducts.map((product) => (
-                  <tr key={product.id} className="border-b hover:bg-gray-50">
-                    <td className="py-2 sm:py-3 px-2 sm:px-4">
-                      <div className="flex items-center gap-3">
-                        <div className="relative w-10 h-14 sm:w-12 sm:h-16 flex-shrink-0 overflow-hidden rounded">
-                          <Image
-                            src={product.image_url || "/placeholder.svg"}
-                            alt={product.name}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <div>
-                          <p className="font-medium text-xs sm:text-sm">{product.name}</p>
-                          <p className="hidden sm:block text-xs text-gray-600 line-clamp-2">{product.description}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="py-2 sm:py-3 px-2 sm:px-4">
-                      <Badge variant="secondary">{product.brands.name}</Badge>
-                    </td>
-                    <td className="hidden md:table-cell py-2 sm:py-3 px-2 sm:px-4">
-                      <Badge variant="outline">{product.perfume_types.name}</Badge>
-                    </td>
-                    <td className="py-2 sm:py-3 px-2 sm:px-4 font-semibold">GH₵{product.price}</td>
-                    <td className="hidden sm:table-cell py-2 sm:py-3 px-2 sm:px-4">
-                      <Badge variant={product.stock_quantity < 10 ? "destructive" : "default"}>
-                        {product.stock_quantity}
-                      </Badge>
-                    </td>
-                    <td className="py-2 sm:py-3 px-2 sm:px-4">
-                      <div className="flex gap-1 sm:gap-2">
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => handleEdit(product)}
-                          disabled={saving}
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
-                          className="text-red-600 hover:text-red-700"
-                          onClick={() => handleDelete(product)}
-                          disabled={saving}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </td>
+            <div className="min-w-full">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-3 px-2 sm:px-4 font-medium">Product</th>
+                    <th className="text-left py-3 px-2 sm:px-4 font-medium">Brand</th>
+                    <th className="hidden md:table-cell text-left py-3 px-2 sm:px-4 font-medium">Type</th>
+                    <th className="text-left py-3 px-2 sm:px-4 font-medium">Price</th>
+                    <th className="hidden sm:table-cell text-left py-3 px-2 sm:px-4 font-medium">Stock</th>
+                    <th className="text-left py-3 px-2 sm:px-4 font-medium">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredProducts.map((product) => (
+                    <tr key={product.id} className="border-b hover:bg-gray-50">
+                      <td className="py-3 px-2 sm:px-4">
+                        <div className="flex items-start gap-3">
+                          <div className="relative w-12 h-16 flex-shrink-0 overflow-hidden rounded border">
+                            <Image
+                              src={product.image_url || "/placeholder.svg"}
+                              alt={product.name}
+                              fill
+                              className="object-cover"
+                              onError={() => {}}
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-sm mb-1 truncate">{product.name}</p>
+                            {product.description && (
+                              <div className="text-xs text-gray-600">
+                                <p className="leading-relaxed">
+                                  {truncateDescription(product.description)}
+                                </p>
+                                {needsTruncation(product.description) && (
+                                  <button
+                                    onClick={() => handleViewDescription(product)}
+                                    className="text-rose-600 hover:text-rose-700 font-medium mt-1 inline-flex items-center gap-1"
+                                  >
+                                    <Eye className="h-3 w-3" />
+                                    Read more
+                                  </button>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-3 px-2 sm:px-4">
+                        <Badge variant="secondary" className="text-xs">
+                          {product.brands.name}
+                        </Badge>
+                      </td>
+                      <td className="hidden md:table-cell py-3 px-2 sm:px-4">
+                        <Badge variant="outline" className="text-xs">
+                          {product.perfume_types.name}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-2 sm:px-4 font-semibold">
+                        GH₵{product.price}
+                      </td>
+                      <td className="hidden sm:table-cell py-3 px-2 sm:px-4">
+                        <Badge variant={product.stock_quantity < 10 ? "destructive" : "default"} className="text-xs">
+                          {product.stock_quantity}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-2 sm:px-4">
+                        <div className="flex gap-1">
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => handleEdit(product)}
+                            disabled={saving}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-red-600 hover:text-red-700 h-8 w-8 p-0"
+                            onClick={() => handleDelete(product)}
+                            disabled={saving}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </CardContent>
       </Card>
 
+      {/* Description Popup Dialog */}
+      <Dialog open={descriptionOpen} onOpenChange={setDescriptionOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Eye className="h-5 w-5" />
+              Product Description
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {viewingDescription && (
+              <>
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                  <div className="relative w-12 h-16 flex-shrink-0 overflow-hidden rounded border">
+                    <Image
+                      src={viewingDescription.image_url || "/placeholder.svg"}
+                      alt={viewingDescription.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-sm">{viewingDescription.name}</h3>
+                    <p className="text-xs text-gray-600">
+                      {viewingDescription.brands?.name || 'No Brand'} • {viewingDescription.perfume_types?.name || 'No Type'}
+                    </p>
+                  </div>
+                </div>
+                <div className="prose prose-sm max-w-none">
+                  <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
+                    {viewingDescription.description || "No description available."}
+                  </p>
+                </div>
+              </>
+            )}
+            <DialogFooter>
+              <Button type="button" onClick={() => setDescriptionOpen(false)}>
+                Close
+              </Button>
+            </DialogFooter>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Edit Product Dialog */}
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Product</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleEditSubmit} className="space-y-4">
             {error && (
-              <div className="text-sm text-red-600">{error}</div>
+              <div className="text-sm text-red-600 p-2 bg-red-50 rounded">{error}</div>
             )}
             <div className="space-y-2">
               <Label htmlFor="edit-name">Name</Label>
@@ -482,10 +577,13 @@ export function ProductsTable({ products, brands, perfumeTypes }: ProductsTableP
             </div>
             <div className="space-y-2">
               <Label htmlFor="edit-description">Description</Label>
-              <Input 
-                id="edit-description" 
-                value={form.description} 
-                onChange={(e) => setForm({ ...form, description: e.target.value })} 
+              <textarea
+                id="edit-description"
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm resize-none focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                rows={3}
+                placeholder="Enter product description..."
               />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -549,9 +647,12 @@ export function ProductsTable({ products, brands, perfumeTypes }: ProductsTableP
                 onChange={(e) => {
                   const file = e.target.files?.[0] || null
                   setSelectedFile(file)
+                  if (file) {
+                    setForm({ ...form, image_url: "" })
+                  }
                 }}
               />
-              {fileError && <div className="text-sm text-red-600">{fileError}</div>}
+              {fileError && <div className="text-sm text-red-600 p-2 bg-red-50 rounded">{fileError}</div>}
               {previewUrl && (
                 <div className="mt-2">
                   <div className="relative w-24 h-32 overflow-hidden rounded border">
@@ -566,7 +667,12 @@ export function ProductsTable({ products, brands, perfumeTypes }: ProductsTableP
               <Input
                 placeholder="https://..."
                 value={form.image_url}
-                onChange={(e) => setForm({ ...form, image_url: e.target.value })}
+                onChange={(e) => {
+                  setForm({ ...form, image_url: e.target.value })
+                  if (e.target.value.trim()) {
+                    setSelectedFile(null)
+                  }
+                }}
               />
             </div>
             <DialogFooter>
@@ -587,7 +693,7 @@ export function ProductsTable({ products, brands, perfumeTypes }: ProductsTableP
           </DialogHeader>
           <div className="space-y-4">
             {error && (
-              <div className="text-sm text-red-600">{error}</div>
+              <div className="text-sm text-red-600 p-2 bg-red-50 rounded">{error}</div>
             )}
             <p className="text-gray-600">
               Are you sure you want to delete <strong>{deletingProduct?.name}</strong>? 
