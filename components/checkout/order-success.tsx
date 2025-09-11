@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -7,6 +8,7 @@ import { Separator } from "@/components/ui/separator"
 import { CheckCircle, Package, Truck, Mail } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { useCart } from "@/contexts/cart-context"
 
 interface OrderSuccessProps {
   order: {
@@ -33,6 +35,14 @@ interface OrderSuccessProps {
 }
 
 export function OrderSuccess({ order }: OrderSuccessProps) {
+  const { refreshCart } = useCart()
+
+  useEffect(() => {
+    // Clear cart on success page load, then refresh client state
+    fetch("/api/cart", { method: "DELETE" }).finally(() => {
+      refreshCart()
+    })
+  }, [refreshCart])
   const orderDate = new Date(order.created_at).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",

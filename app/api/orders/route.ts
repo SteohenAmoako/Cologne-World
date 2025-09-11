@@ -70,13 +70,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: itemsError.message }, { status: 500 })
     }
 
-    // Clear user's cart
-    const { error: cartError } = await supabase.from("cart_items").delete().eq("user_id", user.id)
-
-    if (cartError) {
-      console.error("Error clearing cart:", cartError)
-      // Don't fail the order if cart clearing fails
-    }
+    // Do not clear the cart here; clear it on the success page load
 
     // Update stock quantities
     for (const item of items) {
