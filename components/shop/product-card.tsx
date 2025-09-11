@@ -82,7 +82,7 @@ export function ProductCard({ perfume }: ProductCardProps) {
               <Star className="h-4 w-4 fill-gray-200 text-gray-200" />
               <span className="text-xs text-gray-500 ml-1">(4.0)</span>
             </div>
-            <p className="text-lg font-bold text-rose-600">${perfume.price}</p>
+            <p className="text-lg font-bold text-rose-600">GH₵{perfume.price}</p>
           </div>
 
           <div className="flex gap-2 pt-2">

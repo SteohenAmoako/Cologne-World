@@ -86,7 +86,7 @@ export function OrderHistory({ orders }: OrderHistoryProps) {
                     >
                       {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                     </Badge>
-                    <span className="font-bold text-lg">${order.total_amount.toFixed(2)}</span>
+                    <span className="font-bold text-lg">GH₵{order.total_amount.toFixed(2)}</span>
                     <Button variant="ghost" size="sm" onClick={() => toggleOrderExpansion(order.id)}>
                       {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
                     </Button>
@@ -144,7 +144,7 @@ export function OrderHistory({ orders }: OrderHistoryProps) {
                             <p className="font-medium text-sm">{item.perfumes.name}</p>
                             <div className="flex justify-between items-center mt-1">
                               <span className="text-sm text-gray-600">Qty: {item.quantity}</span>
-                              <span className="font-semibold">${(item.quantity * item.price).toFixed(2)}</span>
+                              <span className="font-semibold">GH₵{(item.quantity * item.price).toFixed(2)}</span>
                             </div>
                           </div>
                         </div>
@@ -169,20 +169,20 @@ export function OrderHistory({ orders }: OrderHistoryProps) {
                           <div className="text-sm space-y-1">
                             <div className="flex justify-between">
                               <span>Subtotal</span>
-                              <span>${order.subtotal.toFixed(2)}</span>
+                              <span>GH₵{order.subtotal.toFixed(2)}</span>
                             </div>
                             <div className="flex justify-between">
                               <span>Shipping</span>
-                              <span>{order.shipping_cost === 0 ? "FREE" : `$${order.shipping_cost.toFixed(2)}`}</span>
+                              <span>{order.shipping_cost === 0 ? "FREE" : `GH₵${order.shipping_cost.toFixed(2)}`}</span>
                             </div>
                             <div className="flex justify-between">
                               <span>Tax</span>
-                              <span>${order.tax_amount.toFixed(2)}</span>
+                              <span>GH₵{order.tax_amount.toFixed(2)}</span>
                             </div>
                             <Separator />
                             <div className="flex justify-between font-semibold">
                               <span>Total</span>
-                              <span>${order.total_amount.toFixed(2)}</span>
+                              <span>GH₵{order.total_amount.toFixed(2)}</span>
                             </div>
                           </div>
                         </div>

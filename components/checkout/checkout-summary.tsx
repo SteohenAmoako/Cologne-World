@@ -41,7 +41,7 @@ export function CheckoutSummary() {
                     <p className="font-medium text-sm text-gray-900 line-clamp-2">{item.perfumes.name}</p>
                     <p className="text-xs text-gray-600">Qty: {item.quantity}</p>
                   </div>
-                  <p className="font-semibold text-sm">${(item.quantity * item.perfumes.price).toFixed(2)}</p>
+                  <p className="font-semibold text-sm">GH₵{(item.quantity * item.perfumes.price).toFixed(2)}</p>
                 </div>
               </div>
             </div>
@@ -54,17 +54,17 @@ export function CheckoutSummary() {
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
             <span>Subtotal</span>
-            <span>${subtotal.toFixed(2)}</span>
+            <span>GH₵{subtotal.toFixed(2)}</span>
           </div>
           <div className="flex justify-between text-sm">
             <span>Shipping</span>
             <span className={shipping === 0 ? "text-green-600 font-medium" : ""}>
-              {shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}
+              {shipping === 0 ? "FREE" : `GH₵${shipping.toFixed(2)}`}
             </span>
           </div>
           <div className="flex justify-between text-sm">
             <span>Tax</span>
-            <span>${tax.toFixed(2)}</span>
+            <span>GH₵{tax.toFixed(2)}</span>
           </div>
         </div>
 
@@ -72,10 +72,10 @@ export function CheckoutSummary() {
 
         <div className="flex justify-between font-bold text-lg">
           <span>Total</span>
-          <span>${total.toFixed(2)}</span>
+          <span>GH₵{total.toFixed(2)}</span>
         </div>
 
-        {shipping === 0 && <div className="text-sm text-green-600 font-medium">🎉 You saved $9.99 on shipping!</div>}
+        {shipping === 0 && <div className="text-sm text-green-600 font-medium">🎉 You saved GH₵9.99 on shipping!</div>}
       </CardContent>
     </Card>
   )

@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server"
 import { ProductGrid } from "@/components/shop/product-grid"
 import { ShopHeader } from "@/components/shop/shop-header"
 import { ShopFilters } from "@/components/shop/shop-filters"
+import { MobileFilters } from "@/components/shop/mobile-filters"
 import { Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -33,9 +34,13 @@ export default async function ShopPage({
       <ShopHeader />
 
       <div className="container mx-auto px-4 py-8">
+        {/* Mobile Filters Button & Drawer */}
+        <div className="lg:hidden mb-4">
+          <MobileFilters brands={brands} perfumeTypes={perfumeTypes} currentFilters={searchParams} />
+        </div>
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}
-          <aside className="lg:w-64 flex-shrink-0">
+          <aside className="hidden lg:block lg:w-64 flex-shrink-0">
             <ShopFilters brands={brands} perfumeTypes={perfumeTypes} currentFilters={searchParams} />
           </aside>
 

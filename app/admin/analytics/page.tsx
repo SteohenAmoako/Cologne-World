@@ -44,7 +44,7 @@ export default async function AdminAnalyticsPage() {
 							<CardTitle>Total Revenue</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<p className="text-2xl font-bold">₦{totalRevenue.toLocaleString()}</p>
+							<p className="text-2xl font-bold">GH₵{totalRevenue.toLocaleString()}</p>
 							<p className="text-sm text-gray-600">Completed orders</p>
 						</CardContent>
 					</Card>

@@ -1,31 +1,60 @@
 import { createClient } from "@/lib/supabase/server"
-import { type NextRequest, NextResponse } from "next/server"
+import { NextResponse } from "next/server"
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+interface Params {
+  params: { id: string }
+}
+
+// GET a single order
+export async function GET(_req: Request, { params }: Params) {
   try {
     const supabase = await createClient()
+    const { data, error } = await supabase.from("orders").select("*").eq("id", params.id).single()
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 404 })
     }
 
-    // In production, you'd check if user has admin role
-    // For now, we'll allow any authenticated user
+    return NextResponse.json(data)
+  } catch {
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  }
+}
 
-    const { status } = await request.json()
+// UPDATE an order
+export async function PUT(req: Request, { params }: Params) {
+  try {
+    const supabase = await createClient()
+    const { status } = await req.json()
 
-    const { data, error } = await supabase.from("orders").update({ status }).eq("id", params.id).select()
+    const { data, error } = await supabase
+      .from("orders")
+      .update({ status })
+      .eq("id", params.id)
+      .select()
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json({ order: data[0] })
-  } catch (error) {
+    return NextResponse.json(data[0])
+  } catch {
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 })
+  }
+}
+
+// DELETE an order
+export async function DELETE(_req: Request, { params }: Params) {
+  try {
+    const supabase = await createClient()
+    const { error } = await supabase.from("orders").delete().eq("id", params.id)
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
+    return NextResponse.json({ success: true })
+  } catch {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 })
   }
 }

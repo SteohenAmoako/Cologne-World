@@ -112,7 +112,7 @@ export function OrderSuccess({ order }: OrderSuccessProps) {
                     <p className="font-medium text-sm text-gray-900 mb-1">{item.perfumes?.name || "Product"}</p>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Qty: {item.quantity || 0}</span>
-                      <span className="font-semibold">${(item.total_price || 0).toFixed(2)}</span>
+                      <span className="font-semibold">GH₵{(item.total_price || 0).toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
@@ -123,20 +123,20 @@ export function OrderSuccess({ order }: OrderSuccessProps) {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span>${finalSubtotal.toFixed(2)}</span>
+                  <span>GH₵{finalSubtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Shipping</span>
-                  <span>{finalShippingCost === 0 ? "FREE" : `$${finalShippingCost.toFixed(2)}`}</span>
+                  <span>{finalShippingCost === 0 ? "FREE" : `GH₵${finalShippingCost.toFixed(2)}`}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Tax</span>
-                  <span>${finalTaxAmount.toFixed(2)}</span>
+                  <span>GH₵{finalTaxAmount.toFixed(2)}</span>
                 </div>
                 <Separator />
                 <div className="flex justify-between font-bold">
                   <span>Total</span>
-                  <span>${finalTotal.toFixed(2)}</span>
+                  <span>GH₵{finalTotal.toFixed(2)}</span>
                 </div>
               </div>
             </CardContent>

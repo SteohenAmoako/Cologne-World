@@ -240,7 +240,7 @@ export function ProductsTable({ products, brands, perfumeTypes }: ProductsTableP
                     <td className="hidden md:table-cell py-2 sm:py-3 px-2 sm:px-4">
                       <Badge variant="outline">{product.perfume_types.name}</Badge>
                     </td>
-                    <td className="py-2 sm:py-3 px-2 sm:px-4 font-semibold">${product.price}</td>
+                    <td className="py-2 sm:py-3 px-2 sm:px-4 font-semibold">GH₵{product.price}</td>
                     <td className="hidden sm:table-cell py-2 sm:py-3 px-2 sm:px-4">
                       <Badge variant={product.stock_quantity < 10 ? "destructive" : "default"}>
                         {product.stock_quantity}

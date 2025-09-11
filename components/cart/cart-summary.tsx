@@ -24,17 +24,17 @@ export function CartSummary() {
         <div className="space-y-2">
           <div className="flex justify-between text-sm">
             <span>Subtotal ({cartCount} items)</span>
-            <span>${subtotal.toFixed(2)}</span>
+            <span>GH₵{subtotal.toFixed(2)}</span>
           </div>
           <div className="flex justify-between text-sm">
             <span>Shipping</span>
             <span className={shipping === 0 ? "text-green-600 font-medium" : ""}>
-              {shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}
+              {shipping === 0 ? "FREE" : `GH₵${shipping.toFixed(2)}`}
             </span>
           </div>
           <div className="flex justify-between text-sm">
             <span>Tax</span>
-            <span>${tax.toFixed(2)}</span>
+            <span>GH₵{tax.toFixed(2)}</span>
           </div>
         </div>
 
@@ -42,7 +42,7 @@ export function CartSummary() {
 
         <div className="flex justify-between font-semibold text-lg">
           <span>Total</span>
-          <span>${total.toFixed(2)}</span>
+          <span>GH₵{total.toFixed(2)}</span>
         </div>
 
         <Link href="/checkout" className="block">
@@ -52,7 +52,7 @@ export function CartSummary() {
         <div className="space-y-2 text-sm text-gray-600">
           <div className="flex items-center gap-2">
             <Truck className="h-4 w-4 text-green-600" />
-            <span>{shipping === 0 ? "Free shipping included!" : `Free shipping on orders over $75`}</span>
+            <span>{shipping === 0 ? "Free shipping included!" : `Free shipping on orders over GH₵75`}</span>
           </div>
           <div className="flex items-center gap-2">
             <Shield className="h-4 w-4 text-blue-600" />

@@ -1,5 +1,7 @@
 import { createClient } from "@/lib/supabase/server"
 import { ProductCard } from "./product-card"
+import { Button } from "@/components/ui/button"
+import { Filter } from "lucide-react"
 
 interface SearchParams {
   search?: string
@@ -86,9 +88,14 @@ export async function ProductGrid({ searchParams }: { searchParams: SearchParams
         <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
           {searchParams.search ? `Search results for "${searchParams.search}"` : "All Perfumes"}
         </h2>
-        <p className="text-sm sm:text-base text-gray-600">
-          {perfumes.length} product{perfumes.length !== 1 ? "s" : ""}
-        </p>
+        <div className="flex items-center justify-between sm:justify-end gap-2">
+          <p className="text-sm sm:text-base text-gray-600">
+            {perfumes.length} product{perfumes.length !== 1 ? "s" : ""}
+          </p>
+          <Button variant="outline" size="sm" className="sm:hidden" id="open-filters">
+            <Filter className="h-4 w-4 mr-2" /> Filters
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">

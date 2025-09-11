@@ -60,7 +60,7 @@ export async function AdminOverview() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalRevenue.toFixed(2)}</div>
+            <div className="text-2xl font-bold">GH₵{totalRevenue.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">All time revenue</p>
           </CardContent>
         </Card>
@@ -71,7 +71,7 @@ export async function AdminOverview() {
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${thisMonthRevenue.toFixed(2)}</div>
+            <div className="text-2xl font-bold">GH₵{thisMonthRevenue.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">Revenue this month</p>
           </CardContent>
         </Card>
@@ -118,7 +118,7 @@ export async function AdminOverview() {
                     <p className="text-xs text-gray-500">{new Date(order.created_at).toLocaleDateString()}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold">${order.total_amount.toFixed(2)}</p>
+                    <p className="font-semibold">GH₵{order.total_amount.toFixed(2)}</p>
                     <Badge
                       variant={
                         order.status === "completed"

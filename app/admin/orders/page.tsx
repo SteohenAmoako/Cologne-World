@@ -11,7 +11,8 @@ export default async function AdminOrdersPage() {
       *,
       order_items (
         quantity,
-        price,
+        unit_price,
+        total_price,
         perfumes (name, brands (name))
       )
     `)

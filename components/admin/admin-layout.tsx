@@ -31,8 +31,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 			{/* Mobile sidebar overlay */}
 			{sidebarOpen && (
 				<div className="fixed inset-0 z-40 lg:hidden">
-					<div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setSidebarOpen(false)} />
-					<div className="relative flex w-full max-w-xs flex-1 flex-col bg-white">
+					<div className="fixed inset-0 bg-gray-600 bg-opacity-40 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
+					<div className="relative flex h-full w-full max-w-xs flex-1 flex-col bg-white">
 						<div className="absolute top-0 right-0 -mr-12 pt-2">
 							<Button variant="ghost" size="icon" className="text-white" onClick={() => setSidebarOpen(false)}>
 								<X className="h-6 w-6" />

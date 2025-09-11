@@ -44,7 +44,7 @@ export function CartContent() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-2 sm:px-4 py-6 sm:py-8">
       <div className="flex items-center gap-2 mb-6">
         <Link href="/shop" className="text-gray-600 hover:text-gray-900">
           <ArrowLeft className="h-5 w-5" />
@@ -53,12 +53,14 @@ export function CartContent() {
         <span className="text-gray-600">({cartCount} items)</span>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
         {/* Cart Items */}
-        <div className="lg:col-span-2 space-y-4">
-          {cartItems.map((item) => (
-            <CartItem key={item.id} item={item} />
-          ))}
+        <div className="lg:col-span-2">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-1 gap-3 sm:gap-4">
+            {cartItems.map((item) => (
+              <CartItem key={item.id} item={item} />
+            ))}
+          </div>
         </div>
 
         {/* Cart Summary */}

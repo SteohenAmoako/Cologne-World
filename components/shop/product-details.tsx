@@ -95,7 +95,7 @@ export function ProductDetails({ perfume }: ProductDetailsProps) {
               </div>
               <span className="text-sm text-gray-600">(4.0) • 127 reviews</span>
             </div>
-            <p className="text-3xl font-bold text-rose-600 mb-4">${perfume.price}</p>
+            <p className="text-3xl font-bold text-rose-600 mb-4">GH₵{perfume.price}</p>
           </div>
 
           <Separator />
@@ -183,7 +183,7 @@ export function ProductDetails({ perfume }: ProductDetailsProps) {
           <div className="space-y-3">
             <div className="flex items-center gap-3 text-sm">
               <Truck className="h-5 w-5 text-green-600" />
-              <span>Free shipping on orders over $75</span>
+              <span>Free shipping on orders over GH₵75</span>
             </div>
             <div className="flex items-center gap-3 text-sm">
               <Shield className="h-5 w-5 text-blue-600" />
