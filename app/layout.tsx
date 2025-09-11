@@ -11,6 +11,35 @@ export const metadata: Metadata = {
   title: "Perfume Palace - Luxury Fragrances",
   description: "Discover premium perfumes from top brands including Pear Potion, Asad and Yara Mix, Saheb, and more",
   generator: "v0.app",
+  metadataBase: new URL((process.env.NEXT_PUBLIC_SITE_URL || "https://example.com").trim()),
+  openGraph: {
+    title: "Perfume Palace - Luxury Fragrances",
+    description:
+      "Discover premium perfumes from top brands including Pear Potion, Asad and Yara Mix, Saheb, and more",
+    url: "/",
+    siteName: "Perfume Palace",
+    images: [
+      {
+        url: "/placeholder.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Perfume Palace preview",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Perfume Palace - Luxury Fragrances",
+    description:
+      "Discover premium perfumes from top brands including Pear Potion, Asad and Yara Mix, Saheb, and more",
+    images: ["/placeholder.jpg"],
+  },
+  icons: {
+    icon: "/placeholder-logo.svg",
+    shortcut: "/placeholder-logo.svg",
+    apple: "/placeholder-logo.svg",
+  },
 }
 
 export default function RootLayout({
