@@ -64,7 +64,7 @@ export function ShopHeader() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 flex-shrink-0">
           <Sparkles className="h-8 w-8 text-rose-600" strokeWidth={2} />
-          <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Perfume Palace</h1>
+          <h1 className="text-2xl font-semibold text-gray-900 tracking-tight">Cologn World</h1>
         </Link>
 
         {/* Desktop Search */}

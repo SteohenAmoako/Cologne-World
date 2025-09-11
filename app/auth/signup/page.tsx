@@ -74,7 +74,7 @@ export default function SignUpPage() {
           <CardHeader className="text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
               <Sparkles className="h-8 w-8 text-rose-600" />
-              <h1 className="text-2xl font-bold text-gray-900">Perfume Palace</h1>
+              <h1 className="text-2xl font-bold text-gray-900">Cologn World</h1>
             </div>
             <CardTitle>Check Your Email</CardTitle>
             <CardDescription>
@@ -103,7 +103,7 @@ export default function SignUpPage() {
         <CardHeader className="text-center">
           <div className="flex items-center justify-center gap-2 mb-2">
             <Sparkles className="h-8 w-8 text-rose-600" />
-            <h1 className="text-2xl font-bold text-gray-900">Perfume Palace</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Cologn World</h1>
           </div>
           <CardTitle>Create Account</CardTitle>
           <CardDescription>Join us to discover your perfect fragrance</CardDescription>

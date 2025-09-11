@@ -26,7 +26,7 @@ export default function NavHeader() {
       <nav className="container mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="text-xl font-bold text-black hover:text-gray-700 transition-colors">
-          Perfume Palace
+          Cologn World
         </Link>
 
         {/* Desktop Links */}
