@@ -17,7 +17,7 @@ export default async function HomePage() {
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Sparkles className="h-8 w-8 text-rose-600" />
-            <h1 className="text-2xl font-bold text-gray-900">Cologn World</h1>
+            <h1 className="text-2xl font-bold text-gray-900">Cologne World</h1>
           </div>
           <nav className="flex items-center gap-4">
             {user ? (
@@ -140,7 +140,7 @@ export default async function HomePage() {
         <div className="container mx-auto text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
             <Sparkles className="h-6 w-6 text-rose-400" />
-            <h3 className="text-xl font-bold">Cologn World</h3>
+            <h3 className="text-xl font-bold">Cologne World</h3>
           </div>
           <p className="text-gray-400">Your destination for luxury fragrances</p>
         </div>

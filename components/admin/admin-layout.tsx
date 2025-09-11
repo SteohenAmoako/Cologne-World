@@ -81,7 +81,7 @@ function SidebarContent({ pathname }: { pathname: string }) {
 				<div className="flex items-center gap-2">
 					<Sparkles className="h-8 w-8 text-rose-600" />
 					<div>
-						<h1 className="text-lg font-bold text-gray-900">Cologn World</h1>
+						<h1 className="text-lg font-bold text-gray-900">Cologne World</h1>
 						<p className="text-xs text-gray-500">Admin Dashboard</p>
 					</div>
 				</div>

@@ -62,7 +62,7 @@ export default function LoginPage() {
 				<CardHeader className="text-center">
 					<div className="flex items-center justify-center gap-2 mb-2">
 						<Sparkles className="h-8 w-8 text-rose-600" />
-						<h1 className="text-2xl font-bold text-gray-900">Cologn World</h1>
+						<h1 className="text-2xl font-bold text-gray-900">Cologne World</h1>
 					</div>
 					<CardTitle>Welcome Back</CardTitle>
 					<CardDescription>Sign in to your account to continue shopping</CardDescription>
